@@ -6,6 +6,16 @@ const UserSchema = Schema({
         trim:true,
         unique:true
     },
+    phone:{
+        type:String,
+        required:false,
+        unique:true
+    },
+    address:{
+        type:String,
+        required:true,
+        trim:true
+    },
     email:{
         type:String,
         required:[true,"Email is required"],
@@ -19,7 +29,14 @@ const UserSchema = Schema({
     },
     role:{
         type:String,
+        enum:['admin','retailer','supplier'],
         required:[true,"Please enter your role"]
+    },
+    // for supplier
+    totalSales:{
+        type:Number,
+        default:0 ,
+        required:false
     }
 })
 

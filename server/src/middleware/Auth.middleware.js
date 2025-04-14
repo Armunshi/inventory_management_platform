@@ -24,3 +24,4 @@ const verifyUser = asyncHandler(async (req,res,next)=>{
         )
     }
 })
+export  {verifyUser}

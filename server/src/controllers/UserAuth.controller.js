@@ -84,7 +84,7 @@ const registerUser = asyncHandler( async (req,res) =>{
     const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
     
     const createduser =await User.findById(user._id).select(
-        "-password -refreshToken"
+        "-password -refreshToken -totalSales -coverImage"
     )
     
     const options = {
@@ -99,7 +99,7 @@ const registerUser = asyncHandler( async (req,res) =>{
     .cookie("RefreshToken" ,refreshToken,options)
     .json(
         new ApiResponse(200,{
-            user: createdStudent,
+            user: createduser,
             accessToken,
             refreshToken
         },

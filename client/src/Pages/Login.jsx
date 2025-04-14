@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Card, CardContent } from "../components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { apiClient } from "@/api/axios";
+import { UserContext } from "context/UserContext";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -11,6 +13,7 @@ export default function LoginPage() {
     password: "",
     role: "",
   });
+  const { setUser } = useContext(UserContext) 
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,6 +26,15 @@ export default function LoginPage() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    try {
+      const response = apiClient.post('api/v1/auth/login',JSON.stringify(formData),{
+        headers:{'Content-Type':'application/json'},
+        withCredentials:true
+      })
+      setUser(response.data?.data);
+    } catch (error) {
+      console.log(error)
+    }
     console.log("Login data submitted:", formData);
   };
 

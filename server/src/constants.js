@@ -1,1 +1,1 @@
-export const DB_NAME = "learnstreamdb"
+export const DB_NAME = "inventora_db"

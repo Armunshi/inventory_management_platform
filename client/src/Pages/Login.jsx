@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { apiClient } from "@/api/axios";
-import { UserContext } from "context/UserContext";
+import { UserContext } from "@/context/UserContext";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({

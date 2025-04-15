@@ -1,6 +1,7 @@
-import { User } from "../models/User";
-import { asyncHandler } from "../utils/asyncHandler";
-import { generateCustomId } from "../utils/genCustomId";
+import { User } from "../models/User.js";
+import { registerNewUser } from "../services/Auth.services.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+// import { generateCustomId } from "../utils/genCustomId";
 
 const generateAccessAndRefreshTokens  = async (userId)=>{
     try {
@@ -20,66 +21,7 @@ const generateAccessAndRefreshTokens  = async (userId)=>{
 }
 
 const registerUser = asyncHandler( async (req,res) =>{
-    
-    
-    const { 
-        username,
-        email, 
-        password,
-        role,
-        address,
-        phone } = req.body
-        
-        // 2 check
-    if ([username,email,password,role,address].some((field)=>
-        field?.trim() === "")){
-            throw new ApiError(400,"The Highlighted fields are required")
-        }
-        
-        
-        // 3 existence
-    const existedUser =await User.findOne({
-            $and: [{ email },{ username },{role}]
-        })
-
-    
-    let counterKey;
-    if (role === 'retailer') counterKey = 'retailerId';
-    else if (role === 'supplier') counterKey = 'supplierId';
-    else if (role === 'admin') counterKey = 'adminId';
-    else return res.status(400).json({ error: 'Invalid role' });
-
-    const sequence = await getNextSequence(counterKey);   
-    const customId = generateCustomId(role,sequence);
-
-    if (existedUser){
-        throw new ApiError(409,"User with email or username already exits");
-    }
-
-
-    const avatarLocalPath = req.files?.avatar[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage[0]?.path;
-
-
-
-    if (avatarLocalPath ){
-        const avatar = await uploadOnCloudinary(avatarLocalPath)
-        const coverImage = await uploadOnCloudinary(coverImageLocalPath)
-        if (!avatar){
-            throw new ApiError(400,"Avatar is required")
-        }
-    }
-   
-
-    const user = await User.create({
-        customId,
-        username,
-        email,
-        password,
-        role,
-        address,
-        phone: phone.empty() ?"":phone
-    })
+    const user = await registerNewUser(req.body,req.files)
 
     const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
     
@@ -91,7 +33,7 @@ const registerUser = asyncHandler( async (req,res) =>{
         httpOnly:true,
         secure:true
     }
-
+    
     console.log("Cookies set: ", accessToken, refreshToken);
 
     return res.status(200)

@@ -1,5 +1,5 @@
 import { User } from "../models/User.js";
-import { registerNewUser } from "../services/Auth.services.js";
+import { login, logout, registerNewUser } from "../services/Auth.services.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 // import { generateCustomId } from "../utils/genCustomId";
 
@@ -55,27 +55,8 @@ const registerUser = asyncHandler( async (req,res) =>{
 const loginUser = asyncHandler(async (req,res)=>{
     
 
-    const {id,email,password,role} = req.body;
-    if (!email || !password || !role){
-        throw new ApiError(400,"email or password is required")
-    }
-
-    const user =await user.findOne({email});
-
-    if (!user){
-        throw new ApiError(404,'no such user exists')
-    }
-    
-    
-
-    const isPasswordValid = await userStudent.isPasswordCorrect(password)
-    if (!isPasswordValid){
-        throw new ApiError(401,'Invalid User Credentials')
-    }
-    
+    const LoggedInUser =await  login(req.body)
     const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(userStudent._id)
-
-    const LoggedInUser = await User.findById(user._id).select("-password -refreshToken ")
     
     const options = {
         httpOnly:true,
@@ -97,17 +78,9 @@ const loginUser = asyncHandler(async (req,res)=>{
 })
 
 const logoutUser = asyncHandler(async (req,res)=>{
-    await User.findByIdAndUpdate(
-        req.user._id,
-        {
-            $set:{
-                refreshToken:undefined
-            }
-            
-        },{
-            new:true
-        }
-    )
+    
+     await logout(req.user._id);
+    
     // there is something wrong with cookie clearing part have to resolve later
 
     const options ={

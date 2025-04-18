@@ -66,9 +66,46 @@ const registerNewUser = async (userData,files) =>{
     return user
 }
 
+const login = async (userData)=>{
+    const {email,password} = userData;
+    
+    if (!email || !password){
+        throw new ApiError(400,"email or password is required")
+    }
 
+    const user =await user.findOne({email});
 
+    if (!user){
+        throw new ApiError(404,'no such user exists')
+    }
+    
+    
+
+    const isPasswordValid = await userStudent.isPasswordCorrect(password)
+    if (!isPasswordValid){
+        throw new ApiError(401,'Invalid User Credentials')
+    }
+    
+    const LoggedInUser = await User.findById(user._id).select("-password -refreshToken ")
+    return LoggedInUser;
+}
+
+const logout =async (userId)=>{
+    return await User.findByIdAndUpdate(
+        userId,
+        {
+            $set:{
+                refreshToken:undefined
+            }
+            
+        },{
+            new:true
+        }
+    )
+}
 
 export {
-    registerNewUser
+    registerNewUser,
+    login,
+    logout
 }

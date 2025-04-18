@@ -5,15 +5,23 @@ const RetailerOrderSchema = new mongoose.Schema({
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User'
     },
-    productId: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product'
-    },
+    products:[
+      {
+        productId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Product'
+        },
+        batchesBought: Number
+      }  
+    ],
+    
     orderDate: Date,
     totalAmount: Number,
     orderStatus: String,
-    transactionType: String,
-    batchesBought: Number
+    transactionType:{
+      type:Enum
+    }
+    
   });
   const SupplierOrderSchema = new mongoose.Schema({
     supplierId: {

@@ -1,5 +1,5 @@
 // utils/getNextSequence.js
-import Counter from '../models/Counter'
+import {Counter} from '../models/Counter.js'
 async function getNextSequence(name) {
   const counter = await Counter.findByIdAndUpdate(
     name,
@@ -10,4 +10,4 @@ async function getNextSequence(name) {
   return counter.seq;
 }
 
-module.exports = getNextSequence;
+export {getNextSequence};

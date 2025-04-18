@@ -5,7 +5,7 @@ import  jwt  from "jsonwebtoken"
 const UserSchema = Schema({
     customId:{
         type:Number,
-        unique:True,
+        unique:true,
     },
     username:{
         type:String,
@@ -86,7 +86,7 @@ UserSchema.methods.generateAccessToken = function (){
     )
 }
 
-userstudentSchema.methods.generateRefreshToken = function (){
+UserSchema.methods.generateRefreshToken = function (){
     return jwt.sign(
         {
             _id: this._id,

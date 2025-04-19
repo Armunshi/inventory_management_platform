@@ -5,10 +5,7 @@ import { UserContextProvider} from '@/context/UserContext'
 function App() {
   return (
     <>
-    <UserContextProvider>
-      <LoginPage/>
-      
-    </UserContextProvider>
+    
     </>
   )
 }

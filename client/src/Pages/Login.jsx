@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { apiClient } from "@/api/axios";
 import { UserContext } from "@/context/UserContext";
 import { useNavigate } from "react-router-dom";
+import { Progress } from "@/components/ui/progress";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -36,7 +37,7 @@ export default function LoginPage() {
       
       console.log(response)
       setUser(response.data?.data);
-      
+      navigate(`/user/${role}`)
     } catch (error) {
       console.log(error)
     }
@@ -48,7 +49,9 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl rounded-2xl">
         <CardContent className="p-6">
           <h2 className="text-2xl font-semibold text-center mb-6">Inventory Management Login</h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          {((localStorage.getItem(`user_id`)&&localStorage.getItem(`accessToken`)) || success) ? (
+        <><Progress/></>
+  ):(<form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Label htmlFor="username">Username</Label>
               <Input
@@ -86,7 +89,8 @@ export default function LoginPage() {
             <Button type="submit" className="w-full">
               Login
             </Button>
-          </form>
+          </form>)
+          }
         </CardContent>
       </Card>
     </div>

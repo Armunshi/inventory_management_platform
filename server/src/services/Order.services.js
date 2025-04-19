@@ -1,6 +1,6 @@
 
-const placeRetailerOrder = async (retailerId,products,orderDate,totalAmount,transactionType)=>{
-
+const placeRetailerOrder = async (retailerId,products,orderDate,totalAmount,transactionType)=>{        
+        
 }
 
 

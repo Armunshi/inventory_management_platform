@@ -4,7 +4,7 @@ import  jwt  from "jsonwebtoken"
 
 const UserSchema = Schema({
     customId:{
-        type:Number,
+        type:String,
         unique:true,
     },
     username:{

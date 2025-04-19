@@ -1,9 +1,10 @@
 import { User } from "../models/User.js";
 import { ApiError } from "../utils/ApiError.js";
+import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { generateCustomId } from "../utils/genCustomId.js";
 import { getNextSequence } from "../utils/getNewSequence.js";
 
-const registerNewUser = async (userData,files) =>{
+const registerNewUser = async (userData,files,res) =>{
     const { 
         username,
         email, 
@@ -28,8 +29,8 @@ const registerNewUser = async (userData,files) =>{
     let counterKey;
     if (role === 'retailer') counterKey = 'retailerId';
     else if (role === 'supplier') counterKey = 'supplierId';
-    else if (role === 'admin') counterKey = 'adminId';
-    else return res.status(400).json({ error: 'Invalid role' });
+    else if (role === 'admin'||role ==='Admin') counterKey = 'adminId';
+    else throw new ApiError(500,'wrong role')
 
     const sequence = await getNextSequence(counterKey);   
     const customId = generateCustomId(role,sequence);
@@ -40,40 +41,42 @@ const registerNewUser = async (userData,files) =>{
 
 
     const avatarLocalPath = files?.avatar[0]?.path;
-    const coverImageLocalPath = files?.coverImage[0]?.path;
+    // const coverImageLocalPath = files?.coverImage[0]?.path;
 
 
 
-    if (avatarLocalPath ){
-        const avatar = await uploadOnCloudinary(avatarLocalPath)
-        const coverImage = await uploadOnCloudinary(coverImageLocalPath)
+    const avatar = await uploadOnCloudinary(avatarLocalPath)
+    
+        console.log(avatar)
+        // const coverImage = await uploadOnCloudinary(coverImageLocalPath)
         if (!avatar){
             throw new ApiError(400,"Avatar is required")
         }
-    }
+        
+    
    
 
     const user = await User.create({
         customId,
         username,
         email,
+        avatar:avatar.secure_url,
         password,
-        coverImage,
         role,
         address,
-        phone: phone.empty() ?"":phone
+        phone: phone.trim() || ""
     })
     return user
 }
 
 const login = async (userData)=>{
-    const {email,password} = userData;
+    const {username,password} = userData;
     
-    if (!email || !password){
+    if (!username || !password){
         throw new ApiError(400,"email or password is required")
     }
 
-    const user =await user.findOne({email});
+    const user = await User.findOne({username});
 
     if (!user){
         throw new ApiError(404,'no such user exists')
@@ -81,7 +84,7 @@ const login = async (userData)=>{
     
     
 
-    const isPasswordValid = await userStudent.isPasswordCorrect(password)
+    const isPasswordValid = await user.isPasswordCorrect(password)
     if (!isPasswordValid){
         throw new ApiError(401,'Invalid User Credentials')
     }

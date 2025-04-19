@@ -10,10 +10,6 @@ router.post('/signup',upload.fields([
         name:"avatar", // front end field should also be avatar
         maxCount: 1
     },
-    {
-        name:"coverImage",
-        maxCount: 1
-    }
 ]),registerUser)
 router.post('/signin',loginUser)
 router.post('/logout',verifyUser,logoutUser)

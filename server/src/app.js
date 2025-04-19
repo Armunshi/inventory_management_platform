@@ -23,5 +23,5 @@ app.use((req,res,next)=>{
 
 import AuthRouter  from "./routes/UserAuth.routes.js"
 
-app.use('api/v1/auth',AuthRouter)
+app.use('/api/v1/auth',AuthRouter)
 export {app} 

@@ -6,6 +6,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@
 import { Label } from "@/components/ui/label";
 import { apiClient } from "@/api/axios";
 import { UserContext } from "@/context/UserContext";
+import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ export default function LoginPage() {
     password: "",
     role: "",
   });
+  const navigate = useNavigate()
   const { setUser } = useContext(UserContext) 
 
   const handleChange = (e) => {
@@ -24,14 +26,17 @@ export default function LoginPage() {
     setFormData({ ...formData, role: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async(e) => {
     e.preventDefault();
     try {
-      const response = apiClient.post('api/v1/auth/login',JSON.stringify(formData),{
+      const response =await apiClient.post('api/v1/auth/signin',JSON.stringify(formData),{
         headers:{'Content-Type':'application/json'},
         withCredentials:true
       })
+      
+      console.log(response)
       setUser(response.data?.data);
+      
     } catch (error) {
       console.log(error)
     }

@@ -1,27 +1,31 @@
 import { User } from "../models/User.js";
 import { login, logout, registerNewUser } from "../services/Auth.services.js";
+import { ApiError } from "../utils/ApiError.js";
+import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 // import { generateCustomId } from "../utils/genCustomId";
 
 const generateAccessAndRefreshTokens  = async (userId)=>{
     try {
         const user = await User.findById(userId)
-        const accessToken = User.generateAccessToken();
-        const refreshToken = User.generateRefreshToken();
+        const accessToken = user.generateAccessToken();
+        console.log(accessToken)
+        const refreshToken = user.generateRefreshToken();
 
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave:false })
-
+        console.log(accessToken,refreshToken)
         return {accessToken , refreshToken}
 
 
     } catch (error) {
+        console.log(error)
         throw new ApiError(500,"Something went wrong while generating Refresh And Access tokens")
     }
 }
 
 const registerUser = asyncHandler( async (req,res) =>{
-    const user = await registerNewUser(req.body,req.files)
+    const user = await registerNewUser(req.body,req.files,res)
 
     const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(user._id)
     
@@ -56,7 +60,7 @@ const loginUser = asyncHandler(async (req,res)=>{
     
 
     const LoggedInUser =await  login(req.body)
-    const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(userStudent._id)
+    const {accessToken,refreshToken} = await generateAccessAndRefreshTokens(LoggedInUser._id)
     
     const options = {
         httpOnly:true,
